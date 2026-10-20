@@ -1,0 +1,37 @@
+
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu indir
+        uses: actions/checkout@v4
+
+      - name: Java kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle ile APK oluştur
+        run: |
+          if [ -f gradlew ]; then
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          elif [ -f build.gradle ]; then
+            gradle assembleDebug
+          else
+            echo "Android proje dosyalari bulunamadi"
+            exit 1
+          fi
+
+      - name: APK dosyasini yukle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Emobasx-APK
+          path: '**/build/outputs/apk/debug/*.apk'
+          
